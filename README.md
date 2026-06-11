@@ -158,15 +158,15 @@ PORT      STATE SERVICE   VERSION
 4. Click **Done**, then join the server
 ---
  
-## Succesful connection
+## Successful connection
  
-
+```
  ExpectedResults.txt Contains the ouput of a succesful creation and 
-connection to a Mincraft server.
----
+connection to a Minecraft server.
+```
 
 ## Sources
-1. Teraform- https://developer.hashicorp.com/terraform/language
+1. Terraform- https://developer.hashicorp.com/terraform/language
 2. Ansible- https://docs.ansible.com/projects/ansible/latest/reference_appendices/YAMLSyntax.html
 
 
