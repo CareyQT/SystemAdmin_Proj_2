@@ -1,0 +1,24 @@
+[Unit]
+Description=Minecraft Server {{ minecraft_version }}
+After=network.target
+
+[Service]
+User={{ minecraft_user }}
+WorkingDirectory={{ minecraft_dir }}
+
+# Start the server
+ExecStart=/usr/bin/java \
+  -Xms512M \
+  -Xmx{{ server_memory_mb }}M \
+  -jar {{ minecraft_dir }}/{{ minecraft_jar }} \
+  --nogui
+
+# Gracefully stop the server so it saves the world before shutting down
+ExecStop=/bin/kill -SIGTERM $MAINPID
+TimeoutStopSec=60
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

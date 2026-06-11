@@ -1,0 +1,89 @@
+---
+- name: Configure Minecraft server
+  hosts: all
+  remote_user: ubuntu
+  become: true  # run tasks as sudo
+
+  vars:
+    minecraft_version: "1.21.1"
+    minecraft_dir: /opt/minecraft
+    minecraft_jar: "server.jar"
+    minecraft_user: minecraft
+    java_package: openjdk-21-jre-headless
+    server_memory_mb: 1024
+
+  tasks:
+
+    # ── System setup ──────────────────────────────────────────────────────────
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Java
+      apt:
+        name: "{{ java_package }}"
+        state: present
+
+    # ── Minecraft user and directories ────────────────────────────────────────
+
+    - name: Create minecraft system user
+      user:
+        name: "{{ minecraft_user }}"
+        system: true
+        shell: /bin/false
+        home: "{{ minecraft_dir }}"
+        create_home: true
+
+    - name: Create minecraft data directory
+      file:
+        path: "{{ minecraft_dir }}"
+        state: directory
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_user }}"
+        mode: "0755"
+
+    # ── Download Minecraft server jar ─────────────────────────────────────────
+
+    - name: Download Minecraft server jar
+      get_url:
+        url: "https://piston-data.mojang.com/v1/objects/59353fb40c36d304f2035d51e7d6e6baa98dc05c/server.jar"
+        dest: "{{ minecraft_dir }}/{{ minecraft_jar }}"
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_user }}"
+        mode: "0644"
+
+    - name: Accept the Minecraft EULA
+      copy:
+        content: "eula=true\n"
+        dest: "{{ minecraft_dir }}/eula.txt"
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_user }}"
+        mode: "0644"
+
+    # ── systemd service ───────────────────────────────────────────────────────
+
+    - name: Install minecraft systemd service
+      template:
+        src: templates/minecraft.service.j2
+        dest: /etc/systemd/system/minecraft.service
+        mode: "0644"
+      notify: Restart minecraft
+
+    - name: Enable and start minecraft service
+      systemd:
+        name: minecraft
+        enabled: true
+        state: started
+        daemon_reload: true
+
+  # ── Handlers ─────────────────────────────────────────────────────────────────
+  # Handlers only run when notified (i.e. when the service file changes)
+
+  handlers:
+    - name: Restart minecraft
+      systemd:
+        name: minecraft
+        state: restarted
+        daemon_reload: true
