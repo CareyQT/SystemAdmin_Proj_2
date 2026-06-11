@@ -1,0 +1,23 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+terraform.tfvars
+
+# AWS credentials
+.aws/
+credentials
+
+# SSH keys
+*.pem
+*.key
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# WSL/Editor
+*.swp
+*.swogit rm -r --cached Terraform/.terraform/
