@@ -20,4 +20,4 @@ Thumbs.db
 
 # WSL/Editor
 *.swp
-*.swogit rm -r --cached Terraform/.terraform/
+*.swogit rm -r --cached Terraform/.terraform/awscliv2.zip
