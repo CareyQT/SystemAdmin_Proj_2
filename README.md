@@ -1,6 +1,6 @@
 # Minecraft Server on AWS
  
-Automated provisioning and configuration of a Minecraft 1.21.1 server on AWS EC2 using Terraform and Ansible. Running the single orchestrator script provisions all infrastructure, configures the server, and starts Minecraft — no manual steps required.
+Automated provisioning and configuration of a Minecraft 1.21.1 server on AWS EC2 using Terraform and Ansible. 
  
 ---
  
@@ -14,40 +14,12 @@ This project deploys a Minecraft Java Edition server to AWS EC2 fully automatica
 2. **Ansible** connects to the new instance over SSH and configures it — installing Java, downloading the Minecraft server jar, and setting up a `systemd` service that starts Minecraft automatically and restarts it cleanly on reboot.
 ### How it works
  
-Terraform and Ansible are complementary tools. Terraform is responsible for creating and managing cloud resources (the *infrastructure*). Ansible is responsible for configuring the software running on those resources (the *configuration*). Together they ensure the server can be recreated identically at any time from a single command.
+Terraform and Ansible are complementary tools. Terraform is responsible for creating and managing cloud resources. Ansible is responsible for configuring the software running on those resources. Together they ensure the server can be recreated identically at any time from a single command.
  
 The Minecraft server runs as a `systemd` service under a dedicated `minecraft` system user. Systemd handles auto-start on boot and clean shutdown — sending `SIGTERM` to the Java process so the world is saved before the instance stops.
  
 ---
- 
-## Pipeline diagram
- 
-```
-Local machine
-     │
-     ▼
-┌─────────────┐     ┌──────────────────────────────────────────┐
-│  run.sh     │────▶│  Terraform                               │
-│             │     │  VPC, subnet, IGW, security group,       │
-│             │     │  EC2 (Ubuntu 22.04), Elastic IP          │
-└─────────────┘     └───────────────────┬──────────────────────┘
-                                        │ public IP
-                                        ▼
-                    ┌──────────────────────────────────────────┐
-                    │  Ansible                                 │
-                    │  Install Java 21, download server.jar,  │
-                    │  write systemd unit, start service       │
-                    └───────────────────┬──────────────────────┘
-                                        │
-                                        ▼
-                    ┌──────────────────────────────────────────┐
-                    │  Minecraft 1.21.1                        │
-                    │  Listening on port 25565                 │
-                    └──────────────────────────────────────────┘
-```
- 
----
- 
+
 ## Requirements
  
 ### Tools
@@ -186,22 +158,15 @@ PORT      STATE SERVICE   VERSION
 4. Click **Done**, then join the server
 ---
  
-## Repository structure
+## Succesful connection
  
-```
-.
-├── Terraform/
-│   ├── main.tf                    # VPC, EC2, security group, Elastic IP
-│   ├── variables.tf               # All configurable variables
-│   ├── outputs.tf                 # Outputs including public IP and nmap command
-│   └── terraform.tfvars.example   # Example configuration file
-├── ansible/
-│   ├── playbook.yml               # Installs Java, downloads server jar, sets up systemd
-│   └── templates/
-│       └── minecraft.service.j2   # systemd service unit template
-├── scripts/
-│   └── run.sh                     # End-to-end orchestrator script
-└── README.md
-```
- 
+
+ ExpectedResults.txt Contains the ouput of a succesful creation and 
+connection to a Mincraft server.
 ---
+
+## Sources
+1. Teraform- https://developer.hashicorp.com/terraform/language
+2. Ansible- https://docs.ansible.com/projects/ansible/latest/reference_appendices/YAMLSyntax.html
+
+

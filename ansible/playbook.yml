@@ -2,7 +2,7 @@
 - name: Configure Minecraft server
   hosts: all
   remote_user: ubuntu
-  become: true  # run tasks as sudo
+  become: true  
 
   vars:
     minecraft_version: "1.21.1"
